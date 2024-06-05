@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
-	"os"
 	"io"
 	"net/http"
+	"os"
 )
 
 type Args struct{
@@ -67,7 +68,7 @@ func main(){
 
 	// Handle the different modes
 	switch args.Mode {
-		
+
 	case "view-key":
 		fmt.Println(config.APIKey)
 
@@ -86,13 +87,14 @@ func main(){
 		}
 
 		// Implement your translation logic here
-		fmt.Printf("Translating from %s to %s\n", args.From, args.To)
+		// fmt.Printf("Translating from %s to %s\n", args.From, args.To)
 
 		translatedText, err := getTranslation()
 		if err != nil {
 			fmt.Println("Output error:", err)
 			return
 		}
+
 		fmt.Println(translatedText)
 
 	default:
@@ -100,15 +102,6 @@ func main(){
 		flag.Usage()
 		os.Exit(1)
 	}
-		// fmt.Printf("Translating from %s to %s\n", args.From, args.To)
-
-		// translatedText, err := getTranslation()
-		// if err !=nil{
-		// 	fmt.Println("Output error:", err)
-		// 	return
-		// }
-		// fmt.Println(translatedText)
-
 }
 
 //getTranslations make the http request to deepL. you need to have your own key
@@ -164,20 +157,23 @@ func getTranslation() (string, error){
 		return "", err
 	}
 
-	translatedText := getReponseText(body)
+	translatedText, err := getReponseText(body)
+	if err != nil{
+		fmt.Println("No translation found", err)
+		return "", err
+	}
 
 	return translatedText, nil
 }
 
 //getResponseText handles the response from deepL to extract only the translated text
-func getReponseText(body []byte) string{
+func getReponseText(body []byte) (string, error){
 
 	var result map[string]interface{}
-	var translatedText string
 
 	if err := json.Unmarshal(body, &result); err != nil {
 		fmt.Println("Error unmarshalling response:", err)
-		return ""
+		return "", nil
 	}
 
 	if translations, ok := result["translations"].([]interface{}); ok && len(translations) > 0 {
@@ -185,12 +181,12 @@ func getReponseText(body []byte) string{
 		if firstTranslation, ok := translations[0].(map[string]interface{}); ok {
 
 			if translatedText, ok := firstTranslation["text"].(string); ok {
-				fmt.Println("Translated Text:", translatedText)
+				return translatedText, nil
 			}
 		}
 	}
 
-	return translatedText
+	return "", errors.New("no translation found")
 }
 
 //readJson reads the api key of the json file
