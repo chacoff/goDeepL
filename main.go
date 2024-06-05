@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"os"
 	"io"
 	"net/http"
 )
@@ -13,7 +14,6 @@ type Args struct{
 	From		string		// original language
 	To			string		// target language
 	Text		string		// text to translate
-	ApiKey		string		// api key from deepL
 	Verbose		bool		// verbose mode
 }
 
@@ -24,14 +24,31 @@ type TranslationResponse struct {
 	} `json:"translations"`
 }
 
+type Config struct {
+	APIKey string `json:"apikey"`	// api key from deepL
+}
+
 var (
+	config Config
 	args Args
 	text []string
 )
 
 //init 
 func init(){
-	args.ApiKey = "8ba5bf2b-6276-4cb5-bbf8-ade500f70285:fx"
+	file, err := os.Open("key.json")
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&config)
+	if err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return
+	}
 }
 
 //main
@@ -84,7 +101,7 @@ func getTranslation() (string, error){
 	}
 
 	// HTTP headers
-	auth := fmt.Sprintf("DeepL-Auth-Key %s", args.ApiKey)  // "DeepL-Auth-Key [yourAuthKey]"
+	auth := fmt.Sprintf("DeepL-Auth-Key %s", config.APIKey)  // "DeepL-Auth-Key [yourAuthKey]"
 	req.Header.Set("Authorization", auth) 
 	req.Header.Set("User-Agent", "goDeepL/0.0.1")
 	req.Header.Set("Content-Type", "application/json")
