@@ -17,13 +17,6 @@ type Args struct{
 	Verbose		bool		// verbose mode
 }
 
-type TranslationResponse struct {
-	Translations []struct {
-		DetectedSourceLanguage string `json:"detected_source_language"`
-		Text                   string `json:"text"`
-	} `json:"translations"`
-}
-
 type Config struct {
 	APIKey string `json:"apikey"`	// api key from deepL
 }
