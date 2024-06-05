@@ -55,6 +55,29 @@ func init() {
 
 // main
 func main() {
+
+	commandMap := map[string]string{
+		"translate": "-mode=translate",
+		"view":      "-mode=view-key",
+		"update":    "-mode=update-key",
+		"delete":    "-mode=delete-key",
+		"help":      "-help",
+	}
+
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: <command> [arguments]\n view -help: goDeepL -help")
+		os.Exit(1)
+	}
+
+	command := os.Args[1]
+	remainingArgs := os.Args[2:]
+
+	if fullCommand, exists := commandMap[command]; exists {
+		// Split fullCommand to extract key-value pairs
+		fullCommandParts := strings.Split(fullCommand, " ")
+		os.Args = append([]string{os.Args[0]}, append(fullCommandParts, remainingArgs...)...)
+	}
+
 	flag.BoolVar(&args.Help, "help", false, "usage help")
 	flag.StringVar(&args.Mode, "mode", "key", "show the used key")
 	flag.StringVar(&args.From, "from", "SP", "original language")
