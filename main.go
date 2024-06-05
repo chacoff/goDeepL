@@ -1,3 +1,18 @@
+/*
+ * File:    main.go
+ * Date:    June 05, 2024
+ * Author:  J.
+ * Email:   jaime.gomez@usach.cl
+ * Project: goDeepL
+ * Description:
+ *   Uses the REST API from DeepL Translator to translate text and phrases via CLI
+ *
+ *
+ * - Basic Build:
+ *    go build -o ./Build/goDeepL.exe
+ *
+ */
+
 package main
 
 import (
@@ -51,7 +66,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "  update-key         Update the API key")
 		fmt.Fprintln(os.Stderr, "  delete-key         Delete the API key")
 		fmt.Fprintln(os.Stderr, "  translate          Translate text (requires -from, -to, and -text)")
-		fmt.Fprintf(os.Stderr, "\nExample: goDeepL -mode translate -From EN -TO RU -text hello world\n")
+		fmt.Fprintf(os.Stderr, "\nExample: goDeepL -mode translate -from EN -to RU -text hello world\n")
 	}
 
 	flag.Parse()
