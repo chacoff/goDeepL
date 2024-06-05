@@ -11,39 +11,36 @@ import (
 	"os"
 )
 
-type Args struct{
-	Help 		bool		// help mode
-	From		string		// original language
-	To			string		// target language
-	Text		string		// text to translate
-	Mode 		string
-	Verbose		bool		// verbose mode
+type Args struct {
+	Help bool   // help mode
+	From string // original language
+	To   string // target language
+	Text string // text to translate
+	Mode string
 }
 
 type Config struct {
-	APIKey string `json:"apikey"`	// api key from deepL
+	APIKey string `json:"apikey"` // api key from deepL
 }
 
 var (
 	config Config
-	args Args
-	text []string
+	args   Args
+	text   []string
 )
 
-//init 
-func init(){
+// init
+func init() {
 	readJson()
 }
 
-//main
-func main(){
+// main
+func main() {
 	flag.BoolVar(&args.Help, "help", false, "usage help")
 	flag.StringVar(&args.Mode, "mode", "key", "show the used key")
 	flag.StringVar(&args.From, "from", "SP", "original language")
 	flag.StringVar(&args.To, "to", "EN", "target language")
 	flag.StringVar(&args.Text, "text", "Hello!", "input text")
-	flag.BoolVar(&args.Verbose, "v", false, "enable verbose mode")
-
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "\nUsage: goDeepL [options] [arguments]\n")
@@ -57,7 +54,6 @@ func main(){
 		fmt.Fprintf(os.Stderr, "\nExample: goDeepL -mode translate -From EN -TO RU -text hello world\n")
 	}
 
-	// Parse the flags
 	flag.Parse()
 
 	// Display help if the -help flag is set
@@ -79,15 +75,11 @@ func main(){
 		fmt.Println("Delete key functionality is not yet implemented.")
 
 	case "translate":
-		// Validate mandatory arguments for translate mode
 		if args.From == "" || args.To == "" || args.Text == "" {
 			fmt.Println("Error: -from, -to, and -text arguments are required for translate mode.")
 			flag.Usage()
 			os.Exit(1)
 		}
-
-		// Implement your translation logic here
-		// fmt.Printf("Translating from %s to %s\n", args.From, args.To)
 
 		translatedText, err := getTranslation()
 		if err != nil {
@@ -104,8 +96,8 @@ func main(){
 	}
 }
 
-//getTranslations make the http request to deepL. you need to have your own key
-func getTranslation() (string, error){
+// getTranslations make the http request to deepL. you need to have your own key
+func getTranslation() (string, error) {
 
 	text = append(text, args.Text)
 
@@ -134,8 +126,8 @@ func getTranslation() (string, error){
 	}
 
 	// HTTP headers
-	auth := fmt.Sprintf("DeepL-Auth-Key %s", config.APIKey)  // "DeepL-Auth-Key [yourAuthKey]"
-	req.Header.Set("Authorization", auth) 
+	auth := fmt.Sprintf("DeepL-Auth-Key %s", config.APIKey) // "DeepL-Auth-Key [yourAuthKey]"
+	req.Header.Set("Authorization", auth)
 	req.Header.Set("User-Agent", "goDeepL/0.0.1")
 	req.Header.Set("Content-Type", "application/json")
 
@@ -157,8 +149,8 @@ func getTranslation() (string, error){
 		return "", err
 	}
 
-	translatedText, err := getReponseText(body)
-	if err != nil{
+	translatedText, err := getResponseText(body)
+	if err != nil {
 		fmt.Println("No translation found", err)
 		return "", err
 	}
@@ -166,8 +158,8 @@ func getTranslation() (string, error){
 	return translatedText, nil
 }
 
-//getResponseText handles the response from deepL to extract only the translated text
-func getReponseText(body []byte) (string, error){
+// getResponseText handles the response from deepL to extract only the translated text
+func getResponseText(body []byte) (string, error) {
 
 	var result map[string]interface{}
 
@@ -189,8 +181,8 @@ func getReponseText(body []byte) (string, error){
 	return "", errors.New("no translation found")
 }
 
-//readJson reads the api key of the json file
-func readJson(){
+// readJson reads the api key of the json file
+func readJson() {
 	file, err := os.Open("key.json")
 	if err != nil {
 		fmt.Println("Error opening file:", err)
@@ -206,8 +198,8 @@ func readJson(){
 	}
 }
 
-//writeJson writes the new key
-func writeJson(){
+// writeJson writes the new key
+func writeJson() {
 	file, err := os.Create("key.json")
 	if err != nil {
 		fmt.Println("Error creating file:", err)
