@@ -62,3 +62,44 @@ This command will prompt you to enter a new API key.
 
 Translate text from English to Russian:
 
+```sh
+goDeepL translate -from EN -to RU -text "hello world"
+```
+
+Translate text from Spanish to English:
+
+```sh
+goDeepL translate -from ES -to EN -text "hola mundo!"
+```
+
+View usage help:
+
+```sh
+goDeepL -help
+```
+
+Update the DeepL API key:
+```sh
+goDeepL -mode update-key
+```
+
+View the DeepL API key:
+
+```sh
+goDeepL -mode view-key
+```
+
+## Notes
+
+- Ensure you have a valid DeepL API key to use the `translate` functionality.
+- The API key is stored in a `key.json` file in the `.goDeepL` directory within your home directory.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgements
+
+- [DeepL API](https://www.deepl.com/en/translator) for providing the translation service.
+
+---
