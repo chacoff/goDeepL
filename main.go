@@ -16,6 +16,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -26,6 +27,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 )
 
 type Args struct {
@@ -86,7 +88,7 @@ func main() {
 		fmt.Println(config.APIKey)
 
 	case "update-key":
-		fmt.Println("Update key functionality is not yet implemented.")
+		updateKey()
 
 	case "delete-key":
 		fmt.Println("Delete key functionality is not yet implemented.")
@@ -235,34 +237,72 @@ func readJson() {
 
 	keyPath := filepath.Join(dirPath, "key.json")
 
-	file, err := os.Open(keyPath)
-	if err != nil {
-		fmt.Println("Error opening file:", err)
-		os.Exit(1)
-	}
-	defer file.Close()
+	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
 
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
-	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
-		os.Exit(1)
+		content := map[string]string{"apikey": "apiapiapi"}
+		file, err := os.Create(keyPath)
+		if err != nil {
+			fmt.Println("Error creating file:", err)
+			os.Exit(1)
+		}
+		defer file.Close()
+
+		encoder := json.NewEncoder(file)
+		err = encoder.Encode(content)
+		if err != nil {
+			fmt.Println("Error writing JSON to file:", err)
+			os.Exit(1)
+		}
+		fmt.Println("First use detected:\n  Do not forget to change the api key with your own: goDeepL -mode update-key")
+	} else {
+		file, err := os.Open(keyPath)
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+			os.Exit(1)
+		}
+		defer file.Close()
+
+		decoder := json.NewDecoder(file)
+		err = decoder.Decode(&config)
+		if err != nil {
+			fmt.Println("Error decoding JSON:", err)
+			os.Exit(1)
+		}
 	}
 }
 
-// writeJson writes the new key
-func writeJson() {
-	file, err := os.Create("key.json")
+// updateKey writes the new key
+func updateKey() {
+
+	dirPath := createGoDeepLFolder()
+
+	keyPath := filepath.Join(dirPath, "key.json")
+
+	fmt.Print("Enter the new API key for DeepL Translator: ")
+
+	reader := bufio.NewReader(os.Stdin)
+	newAPIKey, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("Error creating file:", err)
+		fmt.Println("Error reading input:", err)
+		os.Exit(1)
+	}
+	newAPIKey = strings.TrimSpace(newAPIKey) // Remove the newline character
+
+	content := map[string]string{"apikey": newAPIKey}
+	file, err := os.Create(keyPath)
+	if err != nil {
+		fmt.Println("Error creating or opening file:", err)
 		return
 	}
 	defer file.Close()
 
 	encoder := json.NewEncoder(file)
-	err = encoder.Encode(config)
+
+	err = encoder.Encode(content)
 	if err != nil {
-		fmt.Println("Error encoding JSON:", err)
+		fmt.Println("Error writing JSON to file:", err)
 		return
 	}
+
+	fmt.Println("api Key updated successfully:", keyPath)
 }
