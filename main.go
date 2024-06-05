@@ -24,6 +24,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/user"
+	"path/filepath"
 )
 
 type Args struct {
@@ -105,8 +107,8 @@ func main() {
 		fmt.Println(translatedText)
 
 	default:
-		fmt.Println("Error: unknown mode. Please use -help to see the usage.")
-		flag.Usage()
+		fmt.Println("Error: unknown mode. Please use goDeepL -help to see the usage.")
+		// flag.Usage()
 		os.Exit(1)
 	}
 }
@@ -196,12 +198,47 @@ func getResponseText(body []byte) (string, error) {
 	return "", errors.New("no translation found")
 }
 
+// getCurrentUser to create the folder .goDeepL and store there the api key
+func getCurrentUser() *user.User {
+	usr, err := user.Current()
+
+	if err != nil {
+		fmt.Println("Error getting current user:", err)
+		os.Exit(1)
+	}
+
+	return usr
+}
+
+// createGoDeepLFolder
+func createGoDeepLFolder() string {
+
+	usr := getCurrentUser()
+
+	dirPath := filepath.Join(usr.HomeDir, ".goDeepL")
+
+	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
+		err = os.MkdirAll(dirPath, os.ModePerm)
+		if err != nil {
+			fmt.Println("Error creating directory .goDeepL under user folder:", err)
+			os.Exit(1)
+		}
+	}
+
+	return dirPath
+}
+
 // readJson reads the api key of the json file
 func readJson() {
-	file, err := os.Open("key.json")
+
+	dirPath := createGoDeepLFolder()
+
+	keyPath := filepath.Join(dirPath, "key.json")
+
+	file, err := os.Open(keyPath)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
-		return
+		os.Exit(1)
 	}
 	defer file.Close()
 
@@ -209,7 +246,7 @@ func readJson() {
 	err = decoder.Decode(&config)
 	if err != nil {
 		fmt.Println("Error decoding JSON:", err)
-		return
+		os.Exit(1)
 	}
 }
 
