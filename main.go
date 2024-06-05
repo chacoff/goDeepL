@@ -65,7 +65,7 @@ func main() {
 	}
 
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: <command> [arguments]\n view -help: goDeepL -help")
+		fmt.Println("Usage: <command> [arguments]\nExample: goDeepL -help")
 		os.Exit(1)
 	}
 
