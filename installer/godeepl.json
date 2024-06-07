@@ -1,0 +1,13 @@
+{
+    "version": "0.0.1",
+    "description": "goDeepL is a command-line tool for translating text using the DeepL API. It allows you to easily translate text between different languages, view the current API key, and update the API key.",
+    "homepage": "https://github.com/chacoff/goDeepL",
+    "license": "MIT",
+    "url": "https://github.com/chacoff/goDeepL/releases/download/goDeepL_v0.0.1/goDeepL_v0.0.1.7z",
+    "hash": "b3b43fd1a3c96041f18fc3e868b9e9d8641f87f8b7d1ace24225fc15ffa35abd",
+    "pre_install": "",
+    "bin": "goDeepL.exe",
+    "autoupdate": {
+        "url": "https://github.com/chacoff/goDeepL/releases/download/goDeepL_v0.0.1/goDeepL_v$version.7z"
+    }
+}
