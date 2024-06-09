@@ -26,6 +26,18 @@ import (
 	"strings"
 )
 
+const (
+	Reset  = "\033[0m"
+	Red    = "\033[31m"
+	Green  = "\033[32m"
+	Yellow = "\033[33m"
+	Blue   = "\033[34m"
+	Purple = "\033[35m"
+	Cyan   = "\033[36m"
+	White  = "\033[37m"
+	Gray   = "\033[38;5;244m"
+)
+
 // getTranslations make the http request to deepL. you need to have your own key
 func getTranslation() (string, error) {
 
@@ -80,7 +92,7 @@ func getTranslation() (string, error) {
 
 	translatedText, err := getResponseText(body)
 	if err != nil {
-		fmt.Println("error:", err)
+		fmt.Println(Red+"error:"+Reset, err)
 		return "", err
 	}
 
@@ -107,7 +119,7 @@ func getResponseText(body []byte) (string, error) {
 
 	if message, ok := result["message"].(string); ok {
 		fmt.Println("See supported languages: https://developers.deepl.com/docs/resources/supported-languages")
-		return "", errors.New(message)
+		return "", errors.New(Red + message + Reset)
 	}
 
 	return "", errors.New("deepL API error")
@@ -166,7 +178,7 @@ func readJson() {
 			fmt.Println("Error writing JSON to file:", err)
 			os.Exit(1)
 		}
-		fmt.Println("First use detected!. Do not forget to change the api key with your own:\n	godeepl -mode update-key or\n	godeepl update-key")
+		fmt.Println(Red + "\nFirst use detected!. Do not forget to change the api key with your own:\n" + Yellow + "	godeepl -mode update-key or\n	godeepl update-key" + Reset)
 		os.Exit(0)
 	} else {
 		file, err := os.Open(keyPath)

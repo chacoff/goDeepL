@@ -116,7 +116,7 @@ func cliLogic() {
 		}
 
 		if args.From == "" {
-			fmt.Println(">> deepL API recommends to include the source language whenever is possible.")
+			fmt.Println(Gray + "[INFO] deepL API recommends to include the source language whenever is possible." + Reset)
 		}
 
 		translatedText, err := getTranslation()
