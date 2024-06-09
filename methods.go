@@ -98,13 +98,16 @@ func getResponseText(body []byte) (string, error) {
 	}
 
 	if translations, ok := result["translations"].([]interface{}); ok && len(translations) > 0 {
-
 		if firstTranslation, ok := translations[0].(map[string]interface{}); ok {
-
 			if translatedText, ok := firstTranslation["text"].(string); ok {
 				return translatedText, nil
 			}
 		}
+	}
+
+	if message, ok := result["message"].(string); ok {
+		fmt.Println("See supported languages: https://developers.deepl.com/docs/resources/supported-languages")
+		return "", errors.New(message)
 	}
 
 	return "", errors.New("deepL API error")
