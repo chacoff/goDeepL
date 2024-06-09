@@ -163,7 +163,8 @@ func readJson() {
 			fmt.Println("Error writing JSON to file:", err)
 			os.Exit(1)
 		}
-		fmt.Println("First use detected:\n  Do not forget to change the api key with your own: goDeepL -mode update-key")
+		fmt.Println("First use detected!. Do not forget to change the api key with your own:\n	godeepl -mode update-key or\n	godeepl update-key")
+		os.Exit(0)
 	} else {
 		file, err := os.Open(keyPath)
 		if err != nil {
